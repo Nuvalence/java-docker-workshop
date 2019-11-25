@@ -24,3 +24,5 @@ shadowJar {
     archiveVersion = ''
     minimize()
 }
+
+build.dependsOn shadowJar
