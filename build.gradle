@@ -1,0 +1,26 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '5.2.0'
+    id 'java'
+    id 'application'
+    id 'idea'
+}
+
+mainClassName = 'demo.HelloWorld'
+
+sourceCompatibility = 8
+targetCompatibility = 8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'com.sparkjava', name: 'spark-core', version: '2.9.1'
+    compile group: 'redis.clients', name: 'jedis', version: '2.6.2'
+}
+shadowJar {
+    baseName = 'shadow'
+    classifier = ''
+    archiveVersion = ''
+    minimize()
+}

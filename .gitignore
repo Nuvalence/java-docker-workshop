@@ -1,4 +1,9 @@
 build
 .gradle
 out
+httpRequests
+*.iml
+*.ipr
+*.iws
+.idea
 
