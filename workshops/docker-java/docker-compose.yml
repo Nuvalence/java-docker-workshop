@@ -1,0 +1,12 @@
+version: '3'
+services:
+  api:
+    build: ../../answers
+    ports:
+      - "7654:4567"
+    environment:
+      - WORLD_NAME=Asgard
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+  redis:
+    image: "redis:alpine"

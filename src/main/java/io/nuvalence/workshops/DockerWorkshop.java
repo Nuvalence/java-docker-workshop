@@ -1,13 +1,14 @@
-package demo;
+package io.nuvalence.workshops;
 
 import redis.clients.jedis.Jedis;
 
 import java.util.Optional;
 
-import static spark.Spark.*;
+import static spark.Spark.get;
 
-public class HelloWorld {
-    public static void main(String[] args) {
+public class DockerWorkshop {
+
+    public static void run() {
         get("/hello", (req, res) -> {
             String msg = String.format("Hello %s", Optional.ofNullable(System.getenv("WORLD_NAME")).orElse("World"));
             System.out.println(msg);
@@ -32,4 +33,3 @@ public class HelloWorld {
         });
     }
 }
-

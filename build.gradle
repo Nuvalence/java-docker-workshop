@@ -3,9 +3,10 @@ plugins {
     id 'java'
     id 'application'
     id 'idea'
+    id 'eclipse'
 }
 
-mainClassName = 'demo.HelloWorld'
+mainClassName = 'io.nuvalence.workshops.Workshops'
 
 sourceCompatibility = 8
 targetCompatibility = 8
@@ -15,6 +16,10 @@ repositories {
 }
 
 dependencies {
+    implementation platform('com.amazonaws:aws-java-sdk-bom:1.11.688')
+    implementation 'com.amazonaws:aws-java-sdk-s3'
+    implementation 'com.amazonaws:aws-java-sdk-dynamodb'
+
     compile group: 'com.sparkjava', name: 'spark-core', version: '2.9.1'
     compile group: 'redis.clients', name: 'jedis', version: '2.6.2'
 }
@@ -22,7 +27,7 @@ shadowJar {
     baseName = 'shadow'
     classifier = ''
     archiveVersion = ''
-    minimize()
+    mergeServiceFiles()
 }
 
 build.dependsOn shadowJar

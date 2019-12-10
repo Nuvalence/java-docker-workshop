@@ -1,61 +1,16 @@
-# Docker Java Workshop
-In this workshop, we will containerize a simple Hello World http app. The application
-runs as a single executable jar file. Details on [building](#building-the-application) 
-and [running](#running-the-application) the application
-can be found below.
+# Nuvalence Java-based AWS Workshops
+This collection of workshops is targeted at Java developers looking to learn how to use AWS services to build 
+applications.
 
-## Exercise
-For this exercise, our goal is to move the Hello World app to a container. We will
-* create a Dockerfile 
-* build an image
-* execute the container
+## Prerequisites:
+- Java 8
+- Amazon Web Services (AWS) Account
+- Postman or curl
+- A working Docker installation
+- A working installation of IntelliJ or Eclipse
+- Familiarity with general CLI usage
+- Ability to execute Java code (within IDE or on command line)
 
-Next, we'll explore docker-compose and run a caching container that our application
-can interact with.
-* create a docker-compose.yml for the application
-* add the redis image to our docker-compose.yml
-* set environment variable for the app to talk to redis
-* use docker-compose to run multiple containers (1 app, 1 redis)
-
-### Creating the Dockerfile
-First, we need to create a Dockerfile for our app.
-* The FROM image should be the java 8 openjdk
-* All relevant files need to be added to the image
-* Document published ports (default http for the app is 4567)
-
-### Building the image
-* Specify a name for your image
-
-### Running a container
-* Set environment variables
-* Don't forget to map ports
-
-## Hello World API
-The hello world application presents a simple http API with two endpoints.
-* `GET /hello` will return a hello world message
-* `GET /cache` will validate redis connectivity
-
-### Building the application
-To build the application, execute the `build` task using one of the following commands
-in the root of the repository:
-
-Windows:
-```shell
-gradlew.bat build
-```
-
-Mac and Linux:
-```shell
-./gradlew build
-```
-
-The build will produce two jar files in the `build/libs/` directory.
-
-### Running the application
-To run the application, execute the shadow jar file (More information on 
-[shadow](https://imperceptiblethoughts.com/shadow/introduction/)):
-
-```shell
-java -jar build/libs/shadow.jar
-```
-
+## Workshops
+- [Docker](workshops/docker-java)
+- [Document Storage with S3 and DynamoDB](workshops/arch-evol-1)
