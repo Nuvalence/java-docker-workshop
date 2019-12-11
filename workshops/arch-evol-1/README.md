@@ -45,6 +45,7 @@ The base already provides a constructor for our class that does three things:
 Let's now begin building the logic. 
 
 **Create the key information we want to store in S3**
+
 We need three pieces information, the current time, a random UUID and the key to be used for our object. Let's define them. 
 Copy the following under the appropriate section in your class.
 ```java
@@ -54,6 +55,7 @@ final String objectKey = "document/" + time + ".txt";
 ```
 
 **Create object metadata to be used when submitting our object to S3**
+
 The following section is necessary to create metadata about the object that we will be uploading to S3. It is different than the metadata being stored in DynamoDB (which is a business requirement).
 
 ```java
@@ -63,11 +65,13 @@ metadata.addUserMetadata("x-amz-meta-title", "Hello"); // set a title for the fi
 ``` 
 
 **Create InputStream object representing the content of our file**
+
 ```java
 InputStream stream = new StringInputStream("The time is " + time);
 ```
 
 **Create a put object request and use the S3 client to put our object into S3 at the specified key**
+
 We now use the S3 client instantiated as part of the constructor of this class to upload our file to S3. 
 
 ```java
@@ -78,6 +82,7 @@ System.out.println("Successfully put object in S3 at key " + objectKey);
 ```
 
 **Create the object to be stored in DynamoDB**
+
 For the purpose of this exercise, we want to create a HashMap object of type `<String,AttributeValue>` and add three values, associatedUser, objectKey and data. We then will put this object to our DynamoDB table. 
 
 ```java
@@ -87,6 +92,7 @@ item.put("date", new AttributeValue().withN(Long.toString(time)));
 ```
 
 **Upload item to DynamoDB**
+
 Once we created our metadata object, it's time to upload it to DynamoDB.
 
 ```java
@@ -96,6 +102,7 @@ System.out.println("Success! Added item to Dynamo for user " + userGUID + " and 
 ```
 
 **Print out the current state of both the bucket and the table**
+
 As a last step, we want to output the contents of the bucket and the dynamo table. We can retrieve all current items and loop through them using the following snippet. 
 
 ```java
@@ -112,3 +119,12 @@ dbresult.getItems().stream()
        .map(m -> String.format("%s - %s - %s", m.get("associatedUser").getS(), m.get("objectKey").getS(), m.get("date").getN()))
        .forEach(System.out::println);
 ```
+
+**Running the Application**
+
+There are a few things you need to do in order to run the solution. If you started with the empty base class, start on step 1, otherwise go to step 2.
+
+1. Update the Workshops.java class to call `DocumentStorageWorkshopBase` instead of `DocumentStorageWorkshop` when passing the `docs` argument.
+2. Build your project using `./gradlew build` at the root of your source
+3. Configure the environment variables with the name of your S3 bucket and DynamoDB table
+4. Run your application and remember to pass `docs` as an argument

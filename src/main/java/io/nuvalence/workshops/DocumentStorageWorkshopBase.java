@@ -58,6 +58,6 @@ public class DocumentStorageWorkshopBase {
         //Put item in DynamoDB table
 
         // Print out the current state of both the bucket and the table
-        
+
     }
 }
