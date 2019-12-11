@@ -7,6 +7,8 @@ public class Workshops {
             DockerWorkshop.run();
         } else if (args.length > 0 && args[0].equals("docs")) {
             new DocumentStorageWorkshop().run();
+        } else if (args.length > 0 && args[0].equals("docsapi")) {
+            DocumentAPI.run();
         } else {
             System.out.println("One of [docker, docs] required as sole argument");
         }
