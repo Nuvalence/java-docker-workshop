@@ -51,9 +51,9 @@ public class DocumentStorageWorkshopBase {
 
         // Create a put object request and use the S3 client to put our object into S3 at the specified key
 
-        // Start building our item we want to insert into DynamoDB
+        // Start building our item we want to insert into DynamoDB.
 
-        //Insert values into item
+        //Insert values into item. This item will hold three values, the UUID, the time and the objectKey. 
 
         //Put item in DynamoDB table
 
