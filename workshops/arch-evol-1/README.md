@@ -126,5 +126,5 @@ There are a few things you need to do in order to run the solution. If you start
 
 1. Update the Workshops.java class to call `DocumentStorageWorkshopBase` instead of `DocumentStorageWorkshop` when passing the `docs` argument.
 2. Build your project using `./gradlew build` at the root of your source
-3. Configure the environment variables with the name of your S3 bucket and DynamoDB table (BUCKE_NAME and TABLE_NAME)
+3. Configure the environment variables with the name of your S3 bucket and DynamoDB table (BUCKET_NAME and TABLE_NAME)
 4. Run your application and remember to pass `docs` as an argument
