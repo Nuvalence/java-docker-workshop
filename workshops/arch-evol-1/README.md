@@ -33,4 +33,82 @@ Next we will create a table for our object metadata
 
 __CHECKPOINT - If you do not have an S3 bucket and DynamoDB, go back and start from the top of this workshop__
 
- 
+## Creating the DocumentStorageWorkshopClass
+We are now ready to build the class that will create our object in S3 and store the metadata in DynamoDB.
+You can follow along the already built class or begin with the empty base provided and try to implement it yourself!
+
+The base already provides a constructor for our class that does three things:
+1. Instantiate an S3 client
+2. Instantiate a DynamoDB client
+3. Read environment variables corresponding to the names of both the bucket and table
+
+Let's now begin building the logic. 
+
+**Create the key information we want to store in S3**
+We need three pieces information, the current time, a random UUID and the key to be used for our object. Let's define them. 
+Copy the following under the appropriate section in your class.
+```java
+final long time = System.currentTimeMillis(); 
+final UUID userGUID = UUID.randomUUID(); 
+final String objectKey = "document/" + time + ".txt";
+```
+
+**Create object metadata to be used when submitting our object to S3**
+The following section is necessary to create metadata about the object that we will be uploading to S3. It is different than the metadata being stored in DynamoDB (which is a business requirement).
+
+```java
+ObjectMetadata metadata = new ObjectMetadata();
+metadata.setContentType("plain/text"); // set the content type of the file to be uploaded
+metadata.addUserMetadata("x-amz-meta-title", "Hello"); // set a title for the file
+``` 
+
+**Create InputStream object representing the content of our file**
+```java
+InputStream stream = new StringInputStream("The time is " + time);
+```
+
+**Create a put object request and use the S3 client to put our object into S3 at the specified key**
+We now use the S3 client instantiated as part of the constructor of this class to upload our file to S3. 
+
+```java
+PutObjectRequest request = new PutObjectRequest(bucketName, objectKey, stream, metadata);
+s3Client.putObject(request);
+
+System.out.println("Successfully put object in S3 at key " + objectKey);
+```
+
+**Create the object to be stored in DynamoDB**
+For the purpose of this exercise, we want to create a HashMap object of type `<String,AttributeValue>` and add three values, associatedUser, objectKey and data. We then will put this object to our DynamoDB table. 
+
+```java
+item.put("associatedUser", new AttributeValue(userGUID.toString()));
+item.put("objectKey", new AttributeValue(objectKey));
+item.put("date", new AttributeValue().withN(Long.toString(time)));
+```
+
+**Upload item to DynamoDB**
+Once we created our metadata object, it's time to upload it to DynamoDB.
+
+```java
+System.out.println("Adding new item...");
+this.dynamo.putItem(this.tableName, item);
+System.out.println("Success! Added item to Dynamo for user " + userGUID + " and object key " + objectKey);
+```
+
+**Print out the current state of both the bucket and the table**
+As a last step, we want to output the contents of the bucket and the dynamo table. We can retrieve all current items and loop through them using the following snippet. 
+
+```java
+ System.out.println("Current bucket contents:");
+ListObjectsV2Result result = s3Client.listObjectsV2(bucketName);
+result.getObjectSummaries()
+        .stream()
+        .map(S3ObjectSummary::getKey)
+        .forEach(System.out::println);
+
+System.out.println("Current table contents:");
+ScanResult dbresult = dynamo.scan(tableName, Arrays.asList("associatedUser", "objectKey", "date"));
+dbresult.getItems().stream()
+       .map(m -> String.format("%s - %s - %s", m.get("associatedUser").getS(), m.get("objectKey").getS(), m.get("date").getN()))
+       .forEach(System.out::println);
+```
