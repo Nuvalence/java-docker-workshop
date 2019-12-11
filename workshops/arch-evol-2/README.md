@@ -2,6 +2,11 @@
 In this workshop, we will deploy an API to ECS and proxy to the endpoint in the container
 using API Gateway.
 
+## Problem statement
+Http app
+healthcheck at `/`
+`POST to /document` with payload `{"content":"Hello World"}`
+
 ## Pushing image to ECR
 1. Create a new ECR repository named {your name}/workshop-api
 2. Follow the push commands to build and push your image to ECR
