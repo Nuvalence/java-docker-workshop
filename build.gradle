@@ -20,6 +20,9 @@ dependencies {
     implementation 'com.amazonaws:aws-java-sdk-s3'
     implementation 'com.amazonaws:aws-java-sdk-dynamodb'
 
+    compile 'com.amazonaws:aws-lambda-java-core:1.1.0'
+    compile 'com.amazonaws:aws-lambda-java-events:2.2.7'
+
     compile group: 'com.sparkjava', name: 'spark-core', version: '2.9.1'
     compile group: 'redis.clients', name: 'jedis', version: '2.6.2'
 }
@@ -31,3 +34,12 @@ shadowJar {
 }
 
 build.dependsOn shadowJar
+
+task buildZip(type: Zip) {
+    from compileJava         // include the compiled source code
+    from processResources    // include any resources
+    into('lib') {            // in a lib folder at the root of the archive, include all runtime dependencies
+        from configurations.runtimeClasspath
+    }
+}
+assemble.dependsOn(buildZip)
