@@ -35,7 +35,7 @@ public class DocumentAPIBase {
     public static void run() {
         // Create two endpoints, the first endpoint will be a 'GET /' which will return the text "ok" with status 200
 
-        // The second endpoint will be a 'POST /document' and will return the UUID that was save to Dynamo
+        // The second endpoint will be a 'POST /document' and will return the UUID that was saved to Dynamo
             // First we need to parse the request body using the ObjectMapper MAPPER
             // We can parse the body into a Map<String, String> to pull out the "content" value from the request payload
             // Finally, we will create a new instance of DocumentAPIBase and use the store function to save our content and metadata
