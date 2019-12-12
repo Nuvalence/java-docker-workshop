@@ -11,17 +11,19 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.util.StringInputStream;
-import com.amazonaws.util.json.Jackson;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.InputStream;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 import static spark.Spark.get;
 import static spark.Spark.post;
 
-public class DocumentAPI {
+public class DocumentAPIBase {
 
     private final AmazonDynamoDB dynamo;
     private final AmazonS3 s3Client;
@@ -31,23 +33,17 @@ public class DocumentAPI {
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     public static void run() {
-        get("/", (req, res) -> {
-            return "ok";
-        });
-        post("/document", (req, res) -> {
-            try {
-                Map<String, String> body = MAPPER.readValue(req.body(), new TypeReference<Map<String, String>>() {
-                });
-                UUID userId = new DocumentAPI().store(body.get("content"));
-                return userId.toString();
-            } catch (Exception e) {
-                e.printStackTrace();
-                return "failed";
-            }
-        });
+        // Create two endpoints, the first endpoint will be a 'GET /' which will return the text "ok" with status 200
+
+        // The second endpoint will be a 'POST /document' and will return the UUID that was save to Dynamo
+            // First we need to parse the request body using the ObjectMapper MAPPER
+            // We can parse the body into a Map<String, String> to pull out the "content" value from the request payload
+            // Finally, we will create a new instance of DocumentAPIBase and use the store function to save our content and metadata
+
+        // Don't forget to handle exceptions!
     }
 
-    public DocumentAPI() {
+    public DocumentAPIBase() {
         // Create a new instance of the S3 client, make sure to specify the region
         s3Client = AmazonS3ClientBuilder.standard()
                 .withRegion("us-east-1")
