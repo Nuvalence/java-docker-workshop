@@ -1,9 +1,9 @@
 # Document Storage using S3 and Dynamo Workshop
-In this workshop, we will deploy an http API to ECS and proxy to the endpoint in the container
+In this workshop, we will deploy an HTTP API to ECS and proxy to the endpoint in the container
 using API Gateway. This will also involve the creation of an Application Load Balancer.
 
 ## Problem statement
-Now that we have code to write to both Dynamo and S3, we are going to create an http app that has two endpoints:
+Now that we have code to write to both Dynamo and S3, we are going to create an http application that has two endpoints:
 * A healthcheck endpoint that is a `GET` at `/` (the root resource) which should return `ok` and a response code of 200 (we'll use this as a healthcheck)
 * An endpoint that accepts payloads of the form `{"content":"Hello World"}` which is a `POST` to `/document`
 Our goal is to put this app in a container to be able to run it on Fargate in ECS
@@ -12,7 +12,8 @@ Our goal is to put this app in a container to be able to run it on Fargate in EC
 You can follow along the already built class or begin with the empty base `DocumentAPIBase` provided and try to implement it yourself!
 For the http layer we will use the [sparkjava framework](http://sparkjava.com/documentation)
 
-Let's now begin building our http wrapper code for the existing logic. 
+Let's now begin building our http wrapper code for the existing logic. This code is a bit different than the code from the previous session.
+The initial implementation outputted a string to the file in S3 with the timestamp of when it was generated, in this case, we will read the contents of the POST request and placed that in the file instead. 
 
 **Creating the root resource healthcheck endpoint**
 
@@ -60,7 +61,8 @@ try {
    return userId.toString();
 } catch (Exception e) { // add a blanket catch clause
     e.printStackTrace();
-    return "failed";
+     res.status(500);
+     return "There was an error processing your POST request";
 }
 ```
 
@@ -77,7 +79,7 @@ There are a few things you need to do in order to run the solution. If you start
 ## Post-implementation Docker setup
 1. Copy the [Dockerfile](Dockerfile) in this directory to the root of the repository
 2. Replace the environment variables in the Dockerfile with your table name and bucket name from the previous exercise
-3. Run `gradlew clean build shadowJar` at the root of the repo to ensure you have the most recent version of the app 
+3. Run `gradlew clean build shadowJar` at the root of the repo to ensure you have the most recent version of the app
 
 ## Pushing image to ECR
 1. Create a new ECR repository named `{yourname}/workshop-api`
@@ -92,18 +94,18 @@ There are a few things you need to do in order to run the solution. If you start
 6. Click the "Add container" button
 7. Name the container `docs-api`
 8. The image should be the full image name (including repository) that you pushed in the previous set of steps 
-9. Add the port 4578 to be mapped in the container
+9. Add the port 4567 to be mapped in the container
 10. Click create to create the task definition
 
-## Creating the ALB
+## Creating the Application Load Balancer
 1. Within the console, navigate to the EC2 service
 2. Scroll down to Load Balancers on the left, and click create a new load balancer
 3. Select the Application Load Balancer type
 4. Enter a name for your load balancer `nuvalence-workshop-lb-{yourname}`
 5. Select "internet facing" for the scheme and the "ipv4" address type
 6. Use the default listener for http on port 80
-7. Select the default VPC and at least 2 security groups 
-8. Click through the next screen to create a new SG with the name `nuvalence-alb-{yourname}-sg`
+7. Select the default VPC and at least 2 subnets 
+8. Click through the next screen to create a new *Security Group* with the name `nuvalence-alb-{yourname}-sg`
 9. Ensure there is a single rule to allow TCP from anywhere on port 80
 10. Click next and then create a new target group
 11. Name the target group `nuvalence-{yourname}-tg`
@@ -120,15 +122,15 @@ There are a few things you need to do in order to run the solution. If you start
 4. For the number of tasks, enter 2
 5. Click the edit button on the Security Group
 6. Add a rule to allow custom tcp on port 4567 from anywhere
-7. Enable load balancing and select the application load balance you created in the previous steps
-8. Select the target group you create in the previous steps
+7. Enable load balancing and select the application load balancer you created in the previous steps
+8. Select the target group you created in the previous steps
 9. Uncheck the service discovery check box, and create the service
 
 ## Attaching policies for S3 and Dynamo Access
 In order for your ECS task to be able to access Dynamo and S3, we need to add a few policies to the task execution role
 1. Attach _AmazonDynamoDBFullAccess_ and _AmazonS3FullAccess_ to the ecsTaskExecution role
 
-**CHECKPOINT** test the endpoint through the alb to ensure everything is properly configured
+**CHECKPOINT** test the endpoint through the ALB to ensure everything is properly configured
 ```shell
 curl -XPOST http://{ALB hostname}/document -d '{"content":"Hello ECS"}'
 ```
@@ -137,12 +139,12 @@ curl -XPOST http://{ALB hostname}/document -d '{"content":"Hello ECS"}'
 The final step is to create an API Gateway instance to proxy through to our ECS service
 1. Create a new regional api with name `{yourname}-docs-api`
 2. Create a new resource for your api
-3. Check the box to make the resource a `proxy resource`
-4. Enter the url for the ALB followed by `/{proxy}`
-5. On your API, click Actions and then select "Deploy API"
+3. Check the box to make the resource a `proxy resource`. Leave the defaults and click *Create Resource*. 
+4. Select *HTTP Proxy* as the integration type. Enter the URL for the ALB followed by `/{proxy}` as the endpoint URL. 
+5. On your API, click the *Actions* dropdown button and then select "Deploy API"
 6. Select [New Stage] to create a new stage for the deployment
 7. Supply a stage name of `dev`
-8. Use the invoke url to test your endpoint
+8. Once the API has been deployed, you can use the invoke url to test your endpoint
 
 ```shell
 curl -XPOST https://{invoke url}/document -d '{"content":"Hello API Gateway"}'
