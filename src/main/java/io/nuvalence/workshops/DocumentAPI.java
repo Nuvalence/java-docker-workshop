@@ -18,8 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.InputStream;
 import java.util.*;
 
-import static spark.Spark.get;
-import static spark.Spark.post;
+import static spark.Spark.*;
 
 public class DocumentAPI {
 
@@ -42,7 +41,8 @@ public class DocumentAPI {
                 return userId.toString();
             } catch (Exception e) {
                 e.printStackTrace();
-                return "failed";
+                res.status(500);
+               return "There was an error processing your POST request";
             }
         });
     }

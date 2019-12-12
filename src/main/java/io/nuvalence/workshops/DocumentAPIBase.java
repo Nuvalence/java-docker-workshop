@@ -40,7 +40,7 @@ public class DocumentAPIBase {
             // We can parse the body into a Map<String, String> to pull out the "content" value from the request payload
             // Finally, we will create a new instance of DocumentAPIBase and use the store function to save our content and metadata
 
-        // Don't forget to handle exceptions!
+        // Don't forget to handle exceptions by returning the appropriate HTTP status code!
     }
 
     public DocumentAPIBase() {
