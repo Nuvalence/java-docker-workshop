@@ -2,13 +2,18 @@ package io.nuvalence.workshops;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
+import com.amazonaws.services.dynamodbv2.model.*;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.S3Object;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class DocumentLookupLambda implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
@@ -39,10 +44,25 @@ public class DocumentLookupLambda implements RequestHandler<APIGatewayProxyReque
         System.out.println(userGUIDString);
 
         // implement dynamo lookup and s3 retrieval
+        QueryRequest queryRequest = new QueryRequest();
+        queryRequest.setTableName(tableName);
+
+        queryRequest.setAttributesToGet(Collections.singletonList("objectKey"));
+        queryRequest.setKeyConditionExpression("associatedUser=:userGUID");
+
+        Map<String, AttributeValue> expressionValueMap = new HashMap<>();
+        expressionValueMap.put("userGUID", new AttributeValue(userGUIDString));
+
+        queryRequest.setExpressionAttributeValues(expressionValueMap);
+
+        QueryResult result = dynamo.query(queryRequest);
+
+        String objectKey = result.getItems().get(0).get("objectKey").getS();
+        S3Object s3Object = s3Client.getObject(bucketName, objectKey);
 
         APIGatewayProxyResponseEvent responseEvent = new APIGatewayProxyResponseEvent();
         responseEvent.setStatusCode(200);
-        responseEvent.setBody(UUID.randomUUID().toString());
+        responseEvent.setBody(s3Object.getObjectContent().toString());
         return responseEvent;
     }
 }
