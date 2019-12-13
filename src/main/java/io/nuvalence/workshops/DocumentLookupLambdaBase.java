@@ -20,14 +20,14 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Iterator;
 
-public class DocumentLookupLambda implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+public class DocumentLookupLambdaBase implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
     private final DynamoDB dynamoDB;
     private final AmazonS3 s3Client;
     private final String tableName;
     private final String bucketName;
 
-    public DocumentLookupLambda() {
+    public DocumentLookupLambdaBase() {
         // Create a new instance of the S3 client, make sure to specify the region
         s3Client = AmazonS3ClientBuilder.standard()
                 .withRegion("us-east-1")
@@ -35,6 +35,7 @@ public class DocumentLookupLambda implements RequestHandler<APIGatewayProxyReque
 
         // Create a new instance of the DynamoDB client
         AmazonDynamoDB dynamo = AmazonDynamoDBClientBuilder.defaultClient();
+        // Create a new instance of the API used for easier querying of DynamoDB
         dynamoDB = new DynamoDB(dynamo);
 
         // Two environment variables must be set, the first is BUCKET_NAME, the second is TABLE_NAME
@@ -45,54 +46,36 @@ public class DocumentLookupLambda implements RequestHandler<APIGatewayProxyReque
 
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent input, Context context) {
-        // Get the path parameter named userGUID
-        String userGUIDString = input.getPathParameters().get("userGUID");
-        System.out.println(userGUIDString);
+        // Get the path parameter named userGUID using the path parameters on the input
 
-        // Get an instance of the Table object to query DynamoDB
-        Table table = dynamoDB.getTable(tableName);
+        // Get an instance of the Table object to query your DynamoDB
 
-        HashMap<String, String> nameMap = new HashMap<String, String>();
-        nameMap.put("#u", "associatedUser");
+        // Create a map of named attributes
 
-        HashMap<String, Object> valueMap = new HashMap<String, Object>();
-        valueMap.put(":userGUID", userGUIDString);
 
-        QuerySpec querySpec = new QuerySpec()
-                .withProjectionExpression("#u, objectKey")
-                .withKeyConditionExpression("#u = :userGUID")
-                .withNameMap(nameMap)
-                .withValueMap(valueMap);
+        // Create a map of values which will be substituted in the key condition expression
 
-        ItemCollection<QueryOutcome> items = table.query(querySpec);
 
-        Iterator<Item> iterator = items.iterator();
-        String objectKey = null;
-        if (iterator.hasNext()) {
-            Item item = iterator.next();
-            objectKey = item.getString("objectKey");
-        }
+        // Create a query spec object with a projection expression for the user guid and the object key
+        // Use a key condition expression to find items by the user GUID
 
-        if (objectKey == null) {
-            APIGatewayProxyResponseEvent responseEvent = new APIGatewayProxyResponseEvent();
-            responseEvent.setStatusCode(404);
-            return responseEvent;
-        }
 
-        S3Object s3Object = s3Client.getObject(bucketName, objectKey);
-        S3ObjectInputStream inputStream = s3Object.getObjectContent();
+        // Query the table using the QuerySpec and capture the resulting collection of items
 
-        try {
-            String documentContent = displayTextInputStream(inputStream);
-            APIGatewayProxyResponseEvent responseEvent = new APIGatewayProxyResponseEvent();
-            responseEvent.setStatusCode(200);
-            responseEvent.setBody(documentContent);
-            return responseEvent;
-        } catch (Exception e) {
-            APIGatewayProxyResponseEvent responseEvent = new APIGatewayProxyResponseEvent();
-            responseEvent.setStatusCode(500);
-            return responseEvent;
-        }
+        // Iterate through the items and get the first object key
+
+
+        // Return a 404 if the object key is null
+
+
+        // Use the S3 client to retrieve the object from the bucket
+
+
+        // Use the inputstream to text helper method to return an APIGatewayProxyResponseEvent with text body and response code 200
+
+        // Make sure to handle any exceptions that occur reading the stream and return a 500 status code
+
+        return null;
     }
 
     private static String displayTextInputStream(InputStream input) throws IOException {

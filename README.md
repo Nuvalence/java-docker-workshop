@@ -14,3 +14,5 @@ applications.
 ## Workshops
 - [Docker](workshops/docker-java)
 - [Document Storage with S3 and DynamoDB](workshops/arch-evol-1)
+- [Running and ECS service and proxying with API Gateway](workshops/arch-evol-2)
+- [Query DynamoDB and get S3 with Lambda](workshops/arch-evol-3)
