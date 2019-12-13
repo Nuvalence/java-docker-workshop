@@ -28,7 +28,7 @@ Table table = dynamoDB.getTable(tableName);
 ```
 
 Next we need to setup our `QuerySpec` which will define our query against our table. This is somewhat complicated syntax that is best learned 
-through trial and error, but a solution is supplied here.
+through documentation and trial and error, but a solution is supplied here.
 ```java
  // Create a map of named attributes
 HashMap<String, String> nameMap = new HashMap<String, String>();
