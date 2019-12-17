@@ -49,6 +49,14 @@ public class DocumentLookupLambda implements RequestHandler<APIGatewayProxyReque
         String userGUIDString = input.getPathParameters().get("userGUID");
         System.out.println(userGUIDString);
 
+        // This is added to trigger a 500 for demo purposes
+        if (userGUIDString.equalsIgnoreCase("trigger500"))
+        {
+            APIGatewayProxyResponseEvent responseEvent = new APIGatewayProxyResponseEvent();
+            responseEvent.setStatusCode(500);
+            return responseEvent;
+        }
+
         // Get an instance of the Table object to query DynamoDB
         Table table = dynamoDB.getTable(tableName);
 
