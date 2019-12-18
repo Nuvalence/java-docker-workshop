@@ -16,3 +16,6 @@ applications.
 - [Document Storage with S3 and DynamoDB](workshops/arch-evol-1)
 - [Running and ECS service and proxying with API Gateway](workshops/arch-evol-2)
 - [Query DynamoDB and get S3 with Lambda](workshops/arch-evol-3)
+
+## DISCLAIMER
+This workshop is coupled with one or more in-person training sessions where additional context is provided. The code and overall project structure of this repository may intentionally ignore best-practice and code quality standards in an effort to simplify teaching or for other instructional purposes. These workshops are purpose built and should not be used as templates for producing production quality applications.
