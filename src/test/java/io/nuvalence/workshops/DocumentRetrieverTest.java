@@ -30,9 +30,5 @@ public class DocumentRetrieverTest {
         Mockito.verify(mockDocumentRepo).getObjectKey(userGUID);
         Mockito.verify(mockFileRepo).retrieveFileContent(objectKey);
         Assert.assertEquals(fileContent,retrievedFileContent);
-
-
-
     }
-
 }
