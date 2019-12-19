@@ -5,6 +5,7 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.document.*;
 import com.amazonaws.services.dynamodbv2.document.spec.QuerySpec;
+import com.amazonaws.services.kms.model.NotFoundException;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -48,9 +49,11 @@ public class DynamoDBDocumentStoreRepository implements DocumentStoreRepository 
         if (iterator.hasNext()) {
             Item item = iterator.next();
             objectKey = item.getString("objectKey");
+            return objectKey;
         }
-
-        return objectKey;
+        else{
+            throw new NotFoundException("The requested user GUID was not found in the DynamoDB Table");
+        }
 
     }
 }

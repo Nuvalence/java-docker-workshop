@@ -18,11 +18,10 @@ public class S3FileRepository implements FileRepository {
                 .build();
 
         bucketName = System.getenv("BUCKET_NAME");
-
     }
 
     @Override
-    public String RetrieveFileContent(String fileKey) {
+    public String retrieveFileContent(String fileKey) {
         S3Object s3Object = s3Client.getObject(bucketName, fileKey);
         S3ObjectInputStream inputStream = s3Object.getObjectContent();
 

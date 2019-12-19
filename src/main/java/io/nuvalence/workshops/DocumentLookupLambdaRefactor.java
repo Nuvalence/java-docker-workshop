@@ -4,6 +4,7 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.document.*;
 import com.amazonaws.services.dynamodbv2.document.spec.QuerySpec;
+import com.amazonaws.services.kms.model.NotFoundException;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
@@ -19,58 +20,39 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.UUID;
 
 public class DocumentLookupLambdaRefactor implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
-    private final FileRepository objectRepository;
-    private final DocumentStoreRepository documentStoreRepository;
 
-    public DocumentLookupLambdaRefactor(FileRepository objectRepository, DocumentStoreRepository documentRepository) {
-        if(null != objectRepository) {
-            this.objectRepository = objectRepository;
-        }
-        else {
-            this.objectRepository = new S3FileRepository();
-        }
+    private final DocumentRetriever documentRetriever;
 
-        if(null != documentRepository) {
-            this.documentStoreRepository = documentRepository;
-        }
-        else {
-            this.documentStoreRepository = new DynamoDBDocumentStoreRepository();
-        }
-
+    public DocumentLookupLambdaRefactor()
+    {
+        documentRetriever = new DocumentRetriever(new S3FileRepository(), new DynamoDBDocumentStoreRepository());
     }
 
     @Override
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent input, Context context) {
         // Get the path parameter named userGUID
-        String userGUIDString = input.getPathParameters().get("userGUID");
-        System.out.println(userGUIDString);
-
-        String objectKey = documentStoreRepository.getObjectKey(userGUIDString);
-
-
-        if (objectKey == null) {
-            APIGatewayProxyResponseEvent responseEvent = new APIGatewayProxyResponseEvent();
-            responseEvent.setStatusCode(404);
-            return responseEvent;
-        }
-
 
 
         try {
-            String documentContent = objectRepository.RetrieveFileContent(objectKey);
-            APIGatewayProxyResponseEvent responseEvent = new APIGatewayProxyResponseEvent();
-            responseEvent.setStatusCode(200);
-            responseEvent.setBody(documentContent);
-            return responseEvent;
-        } catch (Exception e) {
-            APIGatewayProxyResponseEvent responseEvent = new APIGatewayProxyResponseEvent();
-            responseEvent.setStatusCode(500);
-            return responseEvent;
+            String userGUIDString = input.getPathParameters().get("userGUID");
+            System.out.println(userGUIDString);
+            String fileContent = documentRetriever.retrieveFileContentsForUser(userGUIDString);
+            return new APIGatewayProxyResponseEvent().withStatusCode(200).withBody(fileContent);
         }
+        catch (NotFoundException ex) {
+            return new APIGatewayProxyResponseEvent().withStatusCode(404).withBody("No file was found for the requested user");
+        }
+        catch (Throwable t) {
+            return new APIGatewayProxyResponseEvent().withStatusCode(500).withBody("An unexpected error occurred retrieving the file");
+        }
+
     }
+
+
 
 
 }
