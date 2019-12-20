@@ -1,4 +1,4 @@
-package io.nuvalence.workshops;
+package io.nuvalence.workshops.lambda;
 
 import java.util.UUID;
 

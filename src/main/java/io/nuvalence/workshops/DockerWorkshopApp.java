@@ -6,7 +6,7 @@ import java.util.Optional;
 
 import static spark.Spark.get;
 
-public class DockerWorkshop {
+public class DockerWorkshopApp {
 
     public static void run() {
         get("/hello", (req, res) -> {

@@ -1,13 +1,8 @@
-package io.nuvalence.workshops;
+package io.nuvalence.workshops.lambda;
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-//import org.junit.jupiter.api.Assertions;
-//import org.junit.jupiter.api.Test;
 import org.junit.Assert;
-import org.mockito.ArgumentMatcher;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import java.util.UUID;
 
@@ -29,6 +24,6 @@ public class DocumentRetrieverTest {
 
         Mockito.verify(mockDocumentRepo).getObjectKey(userGUID);
         Mockito.verify(mockFileRepo).retrieveFileContent(objectKey);
-        Assert.assertEquals(fileContent,retrievedFileContent);
+        Assert.assertEquals(fileContent, retrievedFileContent);
     }
 }

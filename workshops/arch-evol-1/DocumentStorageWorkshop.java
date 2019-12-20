@@ -17,14 +17,14 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;
 
-public class DocumentStorageWorkshopBase {
+public class DocumentStorageWorkshop {
 
     private final AmazonDynamoDB dynamo;
     private final AmazonS3 s3Client;
     private final String tableName;
     private final String bucketName;
 
-    public DocumentStorageWorkshopBase() {
+    public DocumentStorageWorkshop() {
         // Create a new instance of the S3 client, make sure to specify the region
         s3Client = AmazonS3ClientBuilder.standard()
                 .withRegion("us-east-1")
@@ -46,18 +46,44 @@ public class DocumentStorageWorkshopBase {
         final String objectKey = "document/" + time + ".txt"; // an object key to use for storing our S3 object
 
         // Create a new metadata object for our S3 request (NOTE - this is different from our document metadata which is a business requirement)
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentType("plain/text"); // set the content type
+        metadata.addUserMetadata("x-amz-meta-title", "Hello"); // set a title for the file
 
         // Create InputStream object representing the content of our file
+        InputStream stream = new StringInputStream("The time is " + time);
 
         // Create a put object request and use the S3 client to put our object into S3 at the specified key
+        PutObjectRequest request = new PutObjectRequest(bucketName, objectKey, stream, metadata);
+        s3Client.putObject(request);
 
-        // Start building our item we want to insert into DynamoDB.
+        System.out.println("Successfully put object in S3 at key " + objectKey);
 
-        //Insert values into item. This item will hold three values, the UUID, the time and the objectKey. 
+        // Start building our item we want to insert into DynamoDB
+        HashMap<String, AttributeValue> item = new HashMap<>();
+
+        //Insert values into item
+        item.put("associatedUser", new AttributeValue(userGUID.toString()));
+        item.put("objectKey", new AttributeValue(objectKey));
+        item.put("date", new AttributeValue().withN(Long.toString(time)));
 
         //Put item in DynamoDB table
+        System.out.println("Adding new item...");
+        this.dynamo.putItem(this.tableName, item);
+        System.out.println("Success! Added item to Dynamo for user " + userGUID + " and object key " + objectKey);
 
         // Print out the current state of both the bucket and the table
+        System.out.println("Current bucket contents:");
+        ListObjectsV2Result result = s3Client.listObjectsV2(bucketName);
+        result.getObjectSummaries()
+                .stream()
+                .map(S3ObjectSummary::getKey)
+                .forEach(System.out::println);
 
+        System.out.println("Current table contents:");
+        ScanResult dbresult = dynamo.scan(tableName, Arrays.asList("associatedUser", "objectKey", "date"));
+        dbresult.getItems().stream()
+                .map(m -> String.format("%s - %s - %s", m.get("associatedUser").getS(), m.get("objectKey").getS(), m.get("date").getN()))
+                .forEach(System.out::println);
     }
 }

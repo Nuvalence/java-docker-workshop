@@ -90,7 +90,7 @@ Now we need to package our Lambda function so we can upload it via the console.
 4. Select a runtime of Java 8
 5. Choose an existing execution role
 6. Under "function code", upload the zip file that was generated in the `build/distributions` directory
-7. Set the handler to `io.nuvalence.workshops.DocumentLookupLambda` or `io.nuvalence.workshops.DocumentLookupLambdaBase` depending on what path you chose to follow
+7. Set the handler to `io.nuvalence.workshops.lambda.DocumentLookupLambda` or `io.nuvalence.workshops.lambda.DocumentLookupLambda` depending on what path you chose to follow
 8. Set environment variables for your function for `BUCKET_NAME` and `TABLE_NAME`
 
 ## Creating API Gateway Resource

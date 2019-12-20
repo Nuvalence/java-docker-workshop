@@ -1,4 +1,4 @@
-package io.nuvalence.workshops;
+package io.nuvalence.workshops.lambda;
 
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
@@ -9,7 +9,6 @@ import com.amazonaws.services.kms.model.NotFoundException;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.UUID;
 
 public class DynamoDBDocumentStoreRepository implements DocumentStoreRepository {
 
