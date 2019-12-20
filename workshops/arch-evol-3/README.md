@@ -10,7 +10,7 @@ sit behind a new endpoint to `GET /content/{userGUID}`
 * For example we would `GET` `/content/00e8c889-9fa2-4123-bc0b-c26f32c9e618`
 
 ## Creating the DocumentLookupLambda class
-You can follow along the already built class or begin with the empty base `DocumentLookupLambdaBase` provided and try to implement it yourself!
+You can copy the example solution from the workshop directory or begin with the empty base provided and try to implement it yourself!
 
 Let's now begin building our Lambda code to query Dynamo and get objects from S3.
 

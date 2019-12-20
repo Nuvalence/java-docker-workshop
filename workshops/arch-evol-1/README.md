@@ -35,7 +35,7 @@ __CHECKPOINT - If you do not have an S3 bucket and DynamoDB, go back and start f
 
 ## Creating the DocumentStorageWorkshopClass
 We are now ready to build the class that will create our object in S3 and store the metadata in DynamoDB.
-You can follow along the already built class or begin with the empty base provided and try to implement it yourself!
+You can copy the example solution from the workshop directory or begin with the empty base provided and try to implement it yourself!
 
 The base already provides a constructor for our class that does three things:
 1. Instantiate an S3 client
@@ -124,7 +124,6 @@ dbresult.getItems().stream()
 
 There are a few things you need to do in order to run the solution. If you started with the empty base class, start on step 1, otherwise go to step 2.
 
-1. Update the Workshops.java class to call `DocumentStorageWorkshopBase` instead of `DocumentStorageWorkshop` when passing the `docs` argument.
-2. Build your project using `./gradlew build` at the root of your source
-3. Configure the environment variables with the name of your S3 bucket and DynamoDB table (BUCKET_NAME and TABLE_NAME)
-4. Run your application and remember to pass `docs` as an argument
+1. Build your project using `./gradlew build` at the root of your source
+2. Configure the environment variables with the name of your S3 bucket and DynamoDB table (BUCKET_NAME and TABLE_NAME)
+3. Run your application and remember to pass `docs` as an argument

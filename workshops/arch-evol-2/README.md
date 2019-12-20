@@ -9,7 +9,7 @@ Now that we have code to write to both Dynamo and S3, we are going to create an 
 Our goal is to put this app in a container to be able to run it on Fargate in ECS
 
 ## Creating the DocumentAPI class
-You can follow along the already built class or begin with the empty base `DocumentAPIBase` provided and try to implement it yourself!
+You can copy the example solution from the workshop directory or begin with the empty base provided and try to implement it yourself!
 For the http layer we will use the [sparkjava framework](http://sparkjava.com/documentation)
 
 Let's now begin building our http wrapper code for the existing logic. This code is a bit different than the code from the previous session.
